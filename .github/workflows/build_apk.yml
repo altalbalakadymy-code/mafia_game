@@ -25,8 +25,18 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Generate Android Platform Files
+        run: |
+          flutter create . --platforms=android --org com.mafia.game --project-name mafia_game
+
       - name: Get Dependencies
         run: flutter pub get
 
       - name: Build Release APK
         run: flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mafia-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
