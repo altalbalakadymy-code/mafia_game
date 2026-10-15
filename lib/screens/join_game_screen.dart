@@ -9,31 +9,34 @@ class JoinGameScreen extends StatefulWidget {
 }
 
 class _JoinGameScreenState extends State<JoinGameScreen> {
-  final _nameCtrl = TextEditingController();
-  final _ipCtrl = TextEditingController();
+  final TextEditingController _pinController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('الانضمام للعبة')),
+      appBar: AppBar(title: const Text('انضمام لاعب للغرفة')),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'اسمك المستعار', border: OutlineInputBorder())),
+            const Icon(Icons.qr_code_scanner, size: 80, color: Colors.redAccent),
             const SizedBox(height: 20),
-            TextField(controller: _ipCtrl, decoration: const InputDecoration(labelText: 'عنوان IP المدير', border: OutlineInputBorder())),
-            const SizedBox(height: 30),
+            const Text('قم بمسح رمز الـ QR الخاص بشخصيتك أو أدخل رمز الدخول (PIN):', textAlign: TextAlign.center),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _pinController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'رمز الدخول (PIN Code)', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade800, minimumSize: const Size.fromHeight(50)),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PlayerNotesScreen()),
-                );
+                if (_pinController.text.isEmpty) return;
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PlayerNotesScreen()));
               },
-              child: const Text('دخول الغرفة ومفكرتي', style: TextStyle(fontSize: 18)),
+              child: const Text('دخول اللعبة', style: TextStyle(fontSize: 18)),
             ),
           ],
         ),
