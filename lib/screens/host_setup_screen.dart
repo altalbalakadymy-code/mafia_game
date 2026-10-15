@@ -137,6 +137,7 @@ class _HostSetupScreenState extends State<HostSetupScreen> {
               ),
               onPressed: _isHotspotActive && _players.length >= 5
                   ? () {
+                      // تمرير قائمة اللاعبين الحقيقيين حصرياً بدون أي قيم افتراضية
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -145,7 +146,7 @@ class _HostSetupScreenState extends State<HostSetupScreen> {
                             onNightFinished: (mafiaTarget, doctorTarget, muteTarget) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('انتهى الليل وتمت معالجة القرارات بنجاح!'),
+                                  content: Text('انتهى الليل وتمت معالجة قرارات اللاعبين الحقيقيين!'),
                                 ),
                               );
                             },
