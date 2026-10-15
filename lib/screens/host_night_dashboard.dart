@@ -23,6 +23,7 @@ class _HostNightDashboardState extends State<HostNightDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    // جلب اللاعبين الأحياء من القائمة الحقيقية التي أنشأها المدير فقط
     var alivePlayers = widget.players.where((p) => p.status == PlayerStatus.alive).toList();
 
     return Scaffold(
