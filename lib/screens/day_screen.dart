@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 class DayScreen extends StatefulWidget {
   final bool isMuted;
-  final Function(String) onSendMessage;
   final VoidCallback onProceedToVoting;
 
   const DayScreen({
     super.key,
     required this.isMuted,
-    required this.onSendMessage,
     required this.onProceedToVoting,
   });
 
@@ -18,9 +16,17 @@ class DayScreen extends StatefulWidget {
 
 class _DayScreenState extends State<DayScreen> {
   final TextEditingController _msgController = TextEditingController();
-  final List<String> messages = [
-    "المدير: شرفت شمس النهار! ناقشوا بحرية من هو المشتبه به.",
+  final List<Map<String, String>> _messages = [
+    {"sender": "المدير", "text": "شرفت شمس النهار! ناقشوا من هو المشتبه به."},
   ];
+
+  void _sendMessage() {
+    if (_msgController.text.isEmpty || widget.isMuted) return;
+    setState(() {
+      _messages.add({"sender": "أنت", "text": _msgController.text});
+      _msgController.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +40,7 @@ class _DayScreenState extends State<DayScreen> {
             icon: const Icon(Icons.how_to_vote, color: Colors.amber),
             onPressed: widget.onProceedToVoting,
             tooltip: 'الانتقال للتصويت',
-          )
+          ),
         ],
       ),
       body: Column(
@@ -53,10 +59,24 @@ class _DayScreenState extends State<DayScreen> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(10),
-              itemCount: messages.length,
+              itemCount: _messages.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(messages[index], style: const TextStyle(color: Colors.white)),
+                var msg = _messages[index];
+                bool isMe = msg["sender"] == "أنت";
+                return Align(
+                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isMe ? Colors.brown.shade700 : Colors.grey.shade800,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      "${msg["sender"]}: ${msg["text"]}",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
                 );
               },
             ),
@@ -68,9 +88,9 @@ class _DayScreenState extends State<DayScreen> {
                 Expanded(
                   child: TextField(
                     controller: _msgController,
-                    enabled: !widget.isMuted, // حظر تلقائي للكتابة إذا كان اللاعب مسكوتاً
+                    enabled: !widget.isMuted,
                     decoration: InputDecoration(
-                      hintText: widget.isMuted ? 'أنت ممنوع من الكلام...' : 'اكتب رسالتك...',
+                      hintText: widget.isMuted ? 'أنت ممنوع من الكلام...' : 'اكتب رسالتك للنقاش...',
                       border: const OutlineInputBorder(),
                       filled: true,
                       fillColor: Colors.grey.shade900,
@@ -80,15 +100,7 @@ class _DayScreenState extends State<DayScreen> {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.send, color: Colors.amber),
-                  onPressed: widget.isMuted ? null : () {
-                    if (_msgController.text.isNotEmpty) {
-                      widget.onSendMessage(_msgController.text);
-                      setState(() {
-                        messages.add("أنت: ${_msgController.text}");
-                        _msgController.clear();
-                      });
-                    }
-                  },
+                  onPressed: widget.isMuted ? null : _sendMessage,
                 ),
               ],
             ),
