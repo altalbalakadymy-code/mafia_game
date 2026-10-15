@@ -25,9 +25,11 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Generate Android Platform Files
+      - name: Generate Android Platform Files & Fix minSdkVersion
         run: |
           flutter create . --platforms=android --org com.mafia.game --project-name mafia_game
+          sed -i 's/minSdkVersion .*/minSdkVersion 21/g' android/app/build.gradle
+          sed -i 's/flutter.minSdkVersion/21/g' android/app/build.gradle
 
       - name: Get Dependencies
         run: flutter pub get
