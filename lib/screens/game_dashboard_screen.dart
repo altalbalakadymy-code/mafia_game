@@ -11,16 +11,16 @@ class GameDashboardScreen extends StatefulWidget {
 }
 
 class _GameDashboardScreenState extends State<GameDashboardScreen> {
-  String latestNotification = "بدء الجلسة بنجاح.. تنتظر مرحلة الليل.";
+  String _currentEventLog = "بدء الجلسة.. مرحلة الليل الأولى.";
 
-  void _triggerNotification(String message) {
+  void _broadcastEvent(String message) {
     setState(() {
-      latestNotification = message;
+      _currentEventLog = message;
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: const TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.red.shade800,
+        content: Text(message, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+        backgroundColor: Colors.red.shade900,
         duration: const Duration(seconds: 4),
       ),
     );
@@ -30,30 +30,29 @@ class _GameDashboardScreenState extends State<GameDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('لوحة تحكم مدير اللعبة ⚙️'),
+        title: const Text('لوحة تحكم المدير والحدث الحي 🎮'),
         backgroundColor: Colors.black,
-        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // شريط الإشعارات الحية
+            // شريط الإشعارات الحية في اللعبة
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.amber.shade900.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber),
+                border: Border.all(color: Colors.amber, width: 1.5),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.notifications_active, color: Colors.amber),
+                  const Icon(Icons.campaign, color: Colors.amber, size: 28),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'الإشعار الحالي: $latestNotification',
+                      'الحدث الفوري: $_currentEventLog',
                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -62,8 +61,8 @@ class _GameDashboardScreenState extends State<GameDashboardScreen> {
             ),
             const SizedBox(height: 20),
             const Text(
-              'إدارة حالة اللاعبين في الوقت الفعلي:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white70),
+              'إدارة قرارات وأحداث اللاعبين (تحديث فوري للأجهزة):',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white70),
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -75,28 +74,31 @@ class _GameDashboardScreenState extends State<GameDashboardScreen> {
                     color: Colors.grey.shade900,
                     child: ListTile(
                       title: Text(p.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      subtitle: Text('الدور: ${p.role.name} | الحالة: ${p.status.name}', style: const TextStyle(color: Colors.grey)),
+                      subtitle: Text('الحالة: ${p.status == PlayerStatus.alive ? "حي 🟢" : "ميت 💀"}', style: const TextStyle(color: Colors.grey)),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // زر الشفاء
                           IconButton(
-                            icon: const Icon(Icons.local_hospital, color: Colors.greenAccent),
-                            tooltip: 'إرسال إشعار شفاء',
-                            onPressed: () => _triggerNotification('🏥 تم شفاء اللاعب ${p.name} بواسطة الطبيب!'),
+                            icon: const Icon(Icons.medical_services, color: Colors.greenAccent),
+                            tooltip: 'إشعار شفاء من الطبيب',
+                            onPressed: () => _broadcastEvent('🏥 قام الطبيب بإنقاذ الشاب ${p.name} ليلاً!'),
                           ),
+                          // زر التسكيت
                           IconButton(
                             icon: const Icon(Icons.mic_off, color: Colors.orangeAccent),
-                            tooltip: 'إرسال إشعار تسكيت',
-                            onPressed: () => _triggerNotification('🔇 تم تسكيت اللاعب ${p.name} في هذه الجولة!'),
+                            tooltip: 'إشعار تسكيت',
+                            onPressed: () => _broadcastEvent('🔇 تم إسكات اللاعب ${p.name} ولا يمكنه التكلم غداً!'),
                           ),
+                          // زر الاغتيال
                           IconButton(
-                            icon: const Icon(Icons.dangerous, color: Colors.redAccent),
-                            tooltip: 'إرسال إشعار اغتيال',
+                            icon: const Icon(Icons.flash_on, color: Colors.redAccent),
+                            tooltip: 'تأكيد اغتيال اللاعب',
                             onPressed: () {
                               setState(() {
                                 p.status = PlayerStatus.dead;
                               });
-                              _triggerNotification('💀 تم اغتيال اللاعب ${p.name} ليلاً!');
+                              _broadcastEvent('💀 نأسف، لقد تم اغتيال اللاعب ${p.name} وأصبح في عداد الأموات!');
                             },
                           ),
                         ],
