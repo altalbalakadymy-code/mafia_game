@@ -7,17 +7,15 @@ class Player {
   PlayerRole role;
   PlayerStatus status;
   bool isMuted;
-  bool hasUsedSniperBullet;
-  int votesCount;
+  String pinCode;
 
   Player({
     required this.id,
     required this.name,
-    required this.role,
+    this.role = PlayerRole.citizen,
     this.status = PlayerStatus.alive,
     this.isMuted = false,
-    this.hasUsedSniperBullet = false,
-    this.votesCount = 1,
+    required this.pinCode,
   });
 
   Map<String, dynamic> toJson() => {
@@ -26,6 +24,7 @@ class Player {
     'role': role.index,
     'status': status.index,
     'isMuted': isMuted,
+    'pinCode': pinCode,
   };
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
@@ -34,5 +33,6 @@ class Player {
     role: PlayerRole.values[json['role']],
     status: PlayerStatus.values[json['status']],
     isMuted: json['isMuted'],
+    pinCode: json['pinCode'],
   );
 }
